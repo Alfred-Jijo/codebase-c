@@ -45,10 +45,13 @@
 //
 #if defined(__clang__)
 # define COMPILER_CLANG 1
+# define COMPILER_NAME "Clang"
 #elif defined(__GNUC__)
 # define COMPILER_GCC 1
+# define COMPILER_NAME "GCC"
 #elif defined(_MSC_VER)
 # define COMPILER_MSVC 1
+# define COMPILER_NAME "MSVC"
 #else
 # error "Compiler not supported"
 #endif
@@ -58,10 +61,13 @@
 //
 #if defined(_WIN32)
 # define OS_WINDOWS 1
+# define OS_NAME "Windows"
 #elif defined(__linux__)
 # define OS_LINUX 1
+# define OS_NAME "Linux"
 #elif defined(__APPLE__) && defined(__MACH__)
 # define OS_MAC 1
+# define OS_NAME "macOS"
 #else
 # error "Operating system not supported"
 #endif
@@ -71,12 +77,16 @@
 //
 #if defined(_M_X64) || defined(__x86_64__)
 # define ARCH_X64 1
+# define ARCH_NAME "x86-64"
 #elif defined(_M_IX86) || defined(__i386__)
 # define ARCH_X86 1
+# define ARCH_NAME "x86"
 #elif defined(_M_ARM64) || defined(__aarch64__)
 # define ARCH_ARM64 1
+# define ARCH_NAME "ARM64"
 #elif defined(_M_ARM) || defined(__arm__)
 # define ARCH_ARM 1
+# define ARCH_NAME "ARM"
 #else
 # error "Architecture not supported"
 #endif
@@ -86,8 +96,10 @@
 //
 #if defined(NDEBUG)
 # define BUILD_RELEASE 1
+# define BUILD_NAME "Release"
 #else
 # define BUILD_DEBUG 1
+# define BUILD_NAME "Debug"
 #endif
 
 //
@@ -95,8 +107,10 @@
 //
 #if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__)
 # define ENDIAN_LITTLE 1
+# define ENDIAN_NAME "Little Endian"
 #elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) || defined(__BIG_ENDIAN__)
 # define ENDIAN_BIG 1
+# define ENDIAN_NAME "Big Endian"
 #else
 # error "Could not determine endianness"
 #endif
@@ -107,17 +121,23 @@
 #if defined(__STDC_VERSION__)
 # if __STDC_VERSION__ >= 202311L
 #  define C_STANDARD 23
+#  define C_STANDARD_NAME "C23"
 # elif __STDC_VERSION__ >= 201710L
 #  define C_STANDARD 17
+#  define C_STANDARD_NAME "C17"
 # elif __STDC_VERSION__ >= 201112L
 #  define C_STANDARD 11
+#  define C_STANDARD_NAME "C11"
 # elif __STDC_VERSION__ >= 199901L
 #  define C_STANDARD 99
+#  define C_STANDARD_NAME "C99"
 # else
 #  define C_STANDARD 89 // C89/C90
+#  define C_STANDARD_NAME "C89"
 # endif
 #else
 # define C_STANDARD 99 // Default to C99
+# define C_STANDARD_NAME "C99"
 #endif
 
 //
@@ -150,7 +170,7 @@ _strlen(const char* str)
     return len;
 }
 
-// Cross-platform print function without stdio
+// Cross-platform prin function without stdio
 static
 inline
 void
@@ -174,61 +194,37 @@ void
 print_context_info(void)
 {
     print("Compilation Context:\n");
-
-    // Compiler
-#if COMPILER_CLANG
-    print("    Compiler: Clang\n");
-#elif COMPILER_GCC
-    print("    Compiler: GCC\n");
-#elif COMPILER_MSVC
-    print("    Compiler: MSVC\n");
-#else
-    print("    Compiler: Unknown\n");
-#endif
-
-    // OS
-#if OS_WINDOWS
-    print("    OS: Windows\n");
-#elif OS_LINUX
-    print("    OS: Linux\n");
-#elif OS_MAC
-    print("    OS: macOS\n");
-#else
-    print("    OS: Unknown\n");
-#endif
-
-    // Architecture
-#if ARCH_X64
-    print("    Architecture: x86-64\n");
-#elif ARCH_X86
-    print("    Architecture: x86\n");
-#elif ARCH_ARM64
-    print("    Architecture: ARM64\n");
-#elif ARCH_ARM
-    print("    Architecture: ARM\n");
-#else
-    print("    Architecture: Unknown\n");
-#endif
-
-    // Endianness
-#if ENDIAN_LITTLE
-    print("    Endianness: Little Endian\n");
-#elif ENDIAN_BIG
-    print("    Endianness: Big Endian\n");
-#else
-    print("    Endianness: Unknown\n");
-#endif
-
-    // Build Type
-#if BUILD_RELEASE
-    print("    Build: Release\n");
-#else
-    print("    Build: Debug\n");
-#endif
-
-    // C Standard
-    print("    C Standard: C" _TO_STRING(C_STANDARD) "\n");
+    print("    Compiler: " COMPILER_NAME "\n");
+    print("    OS: " OS_NAME "\n");
+    print("    Architecture: " ARCH_NAME "\n");
+    print("    Endianness: " ENDIAN_NAME "\n");
+    print("    Build: " BUILD_NAME "\n");
+    print("    C Standard: " C_STANDARD_NAME "\n");
 }
+
+// Define a debug break macro for cross-platform use
+#if COMPILER_MSVC
+# define debug_break() __debugbreak()
+#elif COMPILER_GCC || COMPILER_CLANG
+# define debug_break() __builtin_trap()
+#else
+# define debug_break() (*(volatile int*)0 = 0) // Fallback for unsupported compilers
+#endif
+
+// The main ASSERT macro
+#if BUILD_DEBUG
+# define ASSERT(expr) \
+    do { \
+        if (!(expr)) { \
+            print("Assertion failed: " #expr "\n"); \
+            print("File: " __FILE__ "\n"); \
+            print("Line: " _TO_STRING(__LINE__) "\n"); \
+            debug_break(); \
+        } \
+    } while (0)
+#else
+# define ASSERT(expr) // In release builds, assertions do nothing
+#endif
 
 // Define a debug break macro for cross-platform use
 #if COMPILER_MSVC
