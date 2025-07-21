@@ -1,0 +1,257 @@
+// macros.h - 2025 - Public domain
+// A collection of macros for determining the compilation context (OS, compiler, architecture).
+// No OS/external dependencies; relies solely on pre-defined compiler macros.
+//
+// This file is part of the C project template by Alfred Jijo.
+//
+// LICENSE
+//   This software is in the public domain. Where that is not legally possible,
+//   this software is licensed under the MIT License.
+//
+//   MIT License
+//
+//   Copyright (c) 2025 Alfred Jijo
+//
+//   Permission is hereby granted, free of charge, to any person obtaining a copy
+//   of this software and associated documentation files (the "Software"), to deal
+//   in the Software without restriction, including without limitation the rights
+//   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//   copies of the Software, and to permit persons to whom the Software is
+//   furnished to do so, subject to the following conditions:
+//
+//   The above copyright notice and this permission notice shall be included in all
+//   copies or substantial portions of the Software.
+//
+//   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//   SOFTWARE.
+
+#ifndef CTXMCS_H
+#define CTXMCS_H
+
+// OS-specific includes for console output
+#if defined(_WIN32)
+# include <windows.h>
+#elif defined(__linux__) || (defined(__APPLE__) && defined(__MACH__))
+# include <unistd.h>
+#endif
+
+//
+// Compiler Detection
+//
+#if defined(__clang__)
+# define COMPILER_CLANG 1
+#elif defined(__GNUC__)
+# define COMPILER_GCC 1
+#elif defined(_MSC_VER)
+# define COMPILER_MSVC 1
+#else
+# error "Compiler not supported"
+#endif
+
+//
+// Operating System Detection
+//
+#if defined(_WIN32)
+# define OS_WINDOWS 1
+#elif defined(__linux__)
+# define OS_LINUX 1
+#elif defined(__APPLE__) && defined(__MACH__)
+# define OS_MAC 1
+#else
+# error "Operating system not supported"
+#endif
+
+//
+// Architecture Detection
+//
+#if defined(_M_X64) || defined(__x86_64__)
+# define ARCH_X64 1
+#elif defined(_M_IX86) || defined(__i386__)
+# define ARCH_X86 1
+#elif defined(_M_ARM64) || defined(__aarch64__)
+# define ARCH_ARM64 1
+#elif defined(_M_ARM) || defined(__arm__)
+# define ARCH_ARM 1
+#else
+# error "Architecture not supported"
+#endif
+
+//
+// Build Configuration
+//
+#if defined(NDEBUG)
+# define BUILD_RELEASE 1
+#else
+# define BUILD_DEBUG 1
+#endif
+
+//
+// Endianness Detection
+//
+#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__)
+# define ENDIAN_LITTLE 1
+#elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) || defined(__BIG_ENDIAN__)
+# define ENDIAN_BIG 1
+#else
+# error "Could not determine endianness"
+#endif
+
+//
+// C Standard Version
+//
+#if defined(__STDC_VERSION__)
+# if __STDC_VERSION__ >= 202311L
+#  define C_STANDARD 23
+# elif __STDC_VERSION__ >= 201710L
+#  define C_STANDARD 17
+# elif __STDC_VERSION__ >= 201112L
+#  define C_STANDARD 11
+# elif __STDC_VERSION__ >= 199901L
+#  define C_STANDARD 99
+# else
+#  define C_STANDARD 89 // C89/C90
+# endif
+#else
+# define C_STANDARD 99 // Default to C99
+#endif
+
+//
+// Utility Macros
+//
+#if COMPILER_MSVC
+# define FORCE_INLINE __forceinline
+#elif COMPILER_GCC || COMPILER_CLANG
+# define FORCE_INLINE __attribute__((always_inline)) inline
+#else
+# define FORCE_INLINE inline
+#endif
+
+// Stringification macros for C_STANDARD
+#define _STRINGIFY(x) #x
+#define _TO_STRING(x) _STRINGIFY(x)
+
+//
+// Context Information
+//
+
+// Helper to get string length without <string.h>
+static
+inline
+size_t
+_strlen(const char* str)
+{
+    size_t len = 0;
+    while (str[len]) { len++; }
+    return len;
+}
+
+// Cross-platform print function without stdio
+static
+inline
+void
+print(const char* message)
+{
+    size_t len = _strlen(message);
+#if OS_WINDOWS
+    HANDLE std_out = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (std_out != INVALID_HANDLE_VALUE)
+    {
+        WriteFile(std_out, message, (DWORD)len, NULL, NULL);
+    }
+#elif OS_LINUX || OS_MAC
+    write(STDOUT_FILENO, message, len);
+#endif
+}
+
+static
+inline
+void
+print_context_info(void)
+{
+    print("Compilation Context:\n");
+
+    // Compiler
+#if COMPILER_CLANG
+    print("    Compiler: Clang\n");
+#elif COMPILER_GCC
+    print("    Compiler: GCC\n");
+#elif COMPILER_MSVC
+    print("    Compiler: MSVC\n");
+#else
+    print("    Compiler: Unknown\n");
+#endif
+
+    // OS
+#if OS_WINDOWS
+    print("    OS: Windows\n");
+#elif OS_LINUX
+    print("    OS: Linux\n");
+#elif OS_MAC
+    print("    OS: macOS\n");
+#else
+    print("    OS: Unknown\n");
+#endif
+
+    // Architecture
+#if ARCH_X64
+    print("    Architecture: x86-64\n");
+#elif ARCH_X86
+    print("    Architecture: x86\n");
+#elif ARCH_ARM64
+    print("    Architecture: ARM64\n");
+#elif ARCH_ARM
+    print("    Architecture: ARM\n");
+#else
+    print("    Architecture: Unknown\n");
+#endif
+
+    // Endianness
+#if ENDIAN_LITTLE
+    print("    Endianness: Little Endian\n");
+#elif ENDIAN_BIG
+    print("    Endianness: Big Endian\n");
+#else
+    print("    Endianness: Unknown\n");
+#endif
+
+    // Build Type
+#if BUILD_RELEASE
+    print("    Build: Release\n");
+#else
+    print("    Build: Debug\n");
+#endif
+
+    // C Standard
+    print("    C Standard: C" _TO_STRING(C_STANDARD) "\n");
+}
+
+// Define a debug break macro for cross-platform use
+#if COMPILER_MSVC
+# define debug_break() __debugbreak()
+#elif COMPILER_GCC || COMPILER_CLANG
+# define debug_break() __builtin_trap()
+#else
+# define debug_break() (*(volatile int*)0 = 0) // Fallback for unsupported compilers
+#endif
+
+// The main ASSERT macro
+#if BUILD_DEBUG
+# define ASSERT(expr) \
+    do { \
+        if (!(expr)) { \
+            print("Assertion failed: " #expr "\n"); \
+            print("File: " __FILE__ "\n"); \
+            print("Line: " _TO_STRING(__LINE__) "\n"); \
+            debug_break(); \
+        } \
+    } while (0)
+#else
+# define ASSERT(expr) // In release builds, assertions do nothing
+#endif
+
+#endif // CTXMCS_H
