@@ -249,20 +249,31 @@ print_context_info(void)
     } while (0)
 
 
-// Linkage-based visibility macros
-#define private static
-#define public extern
+// Linkage macros
+#define INTERNAL static
+#define EXTERNAL extern
 
 // Symbol visibility macros for shared libraries
 #if defined(__GNUC__) || defined(__clang__)
-# define PUBLIC __attribute__((visibility("default")))
-# define PRIVATE __attribute__((visibility("hidden")))
+# define API_EXPORT __attribute__((visibility("default")))
+# define API_LOCAL  __attribute__((visibility("hidden")))
 #elif defined(_MSC_VER)
-# define PUBLIC __declspec(dllexport)
-# define PRIVATE __declspec(dllimport)
+# define API_EXPORT __declspec(dllexport)
+# define API_LOCAL  __declspec(dllimport)
 #else
-# define PUBLIC
-# define PRIVATE
+# define API_EXPORT
+# define API_LOCAL
+#endif
+
+// C linkage macros for C++
+#ifdef __cplusplus
+# define C_LINKAGE extern "C"
+# define C_LINKAGE_BEGIN extern "C" {
+# define C_LINKAGE_END }
+#else
+# define C_LINKAGE
+# define C_LINKAGE_BEGIN
+# define C_LINKAGE_END
 #endif
 
 // Define a macro for deprecation warnings
