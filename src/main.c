@@ -1,8 +1,6 @@
+#include "include.h"
 
-int 
-main(void
-    ) 
-{
-	print_context_info();
-	return 0;
+int main (void) {
+    print("Hello, World!\n");
+    return 0;
 }

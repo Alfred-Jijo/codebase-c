@@ -3,7 +3,7 @@ setlocal
 
 REM --- Project Configuration ---
 set NAME=codebase
-set VERSION=0.4.2
+set VERSION=0.4.3
 
 REM --- Directory Configuration ---
 set SRCDIR_APP=src
@@ -24,11 +24,20 @@ set SOURCES=%SRCDIR_APP%\main.c
 REM --- Object Files ---
 set OBJECTS=%BUILDDIR%\main.obj
 
+REM --- Test Configuration ---
+set TESTDIR=test
+set TESTS=%TESTDIR%\test_macros.c
+set TESTBIN=%BINDIR%\test_macros.exe
+set TESTALLSRC=%TESTDIR%\test_all.c
+set TESTALLBIN=%BINDIR%\test_all.exe
+
 REM --- Default Target: Build the project ---
 if "%1"=="" goto build
 if "%1"=="all" goto build
 if "%1"=="clean" goto clean
 if "%1"=="run" goto run
+if "%1"=="test" goto test
+if "%1"=="test_all" goto test_all
 echo "Unknown command: %1"
 goto:eof
 
@@ -36,8 +45,18 @@ goto:eof
     call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
     call :clean
     echo "Starting build..."
-    if not exist %BINDIR% mkdir %BINDIR%
-    if not exist %BUILDDIR% mkdir %BUILDDIR%
+    if not exist %BINDIR% (
+        mkdir %BINDIR%
+        echo *>%BINDIR%\.gitignore
+        echo !.gitignore>>%BINDIR%\.gitignore
+        echo !*.c>>%BINDIR%\.gitignore
+    )
+    if not exist %BUILDDIR% (
+        mkdir %BUILDDIR%
+        echo *>%BUILDDIR%\.gitignore
+        echo !.gitignore>>%BUILDDIR%\.gitignore
+        echo !*.c>>%BUILDDIR%\.gitignore
+    )
 
     echo "Compiling %SOURCES%..."
     %CC% %CFLAGS% /c "%SOURCES%" /Fo"%OBJECTS%"
@@ -59,4 +78,46 @@ goto:eof
     if exist %BUILDDIR% rmdir /s /q %BUILDDIR%
     if exist %BINDIR% rmdir /s /q %BINDIR%
     echo "Clean complete."
+    goto:eof
+
+:test
+    if "%2"=="" (
+        echo "Building and running all tests..."
+        call :test_all
+        goto:eof
+    )
+    if not exist %BINDIR% (
+        mkdir %BINDIR%
+        echo *>%BINDIR%\.gitignore
+        echo !.gitignore>>%BINDIR%\.gitignore
+        echo !*.c>>%BINDIR%\.gitignore
+    )
+    set TESTSRC=%TESTDIR%\%2.c
+    set TESTEXE=%BINDIR%\%2.exe
+    if not exist %BINDIR% mkdir %BINDIR%
+    echo "Compiling %TESTSRC%..."
+    %CC% %CFLAGS% /Fe"%TESTEXE%" "%TESTSRC%"
+    if exist "%TESTEXE%" (
+        echo "Running %TESTEXE%..."
+        "%TESTEXE%"
+    ) else (
+        echo "Test build failed: %TESTSRC%"
+    )
+    goto:eof
+
+:test_all
+    if not exist %BINDIR% (
+        mkdir %BINDIR%
+        echo *>%BINDIR%\.gitignore
+        echo !.gitignore>>%BINDIR%\.gitignore
+        echo !*.c>>%BINDIR%\.gitignore
+    )
+    if not exist %BINDIR% mkdir %BINDIR%
+    echo "Compiling all tests..."
+    %CC% %CFLAGS% /Fe"%TESTBIN%" "%TESTS%"
+    %CC% %CFLAGS% /Fe"%TESTALLBIN%" "%TESTALLSRC%"
+    echo "Running all tests..."
+    pushd %BINDIR%
+    test_all.exe
+    popd
     goto:eof

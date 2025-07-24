@@ -226,28 +226,26 @@ print_context_info(void)
 # define ASSERT(expr) // In release builds, assertions do nothing
 #endif
 
-// Define a debug break macro for cross-platform use
-#if COMPILER_MSVC
-# define debug_break() __debugbreak()
-#elif COMPILER_GCC || COMPILER_CLANG
-# define debug_break() __builtin_trap()
-#else
-# define debug_break() (*(volatile int*)0 = 0) // Fallback for unsupported compilers
-#endif
-
-// The main ASSERT macro
-#if BUILD_DEBUG
-# define ASSERT(expr) \
+// Define a macro to check if a pointer is NULL
+#define ASSERT_NOT_NULL(ptr) \
     do { \
-        if (!(expr)) { \
-            print("Assertion failed: " #expr "\n"); \
-            print("File: " __FILE__ "\n"); \
-            print("Line: " _TO_STRING(__LINE__) "\n"); \
-            debug_break(); \
-        } \
+	if ((ptr) == NULL) { \
+	    print("Assertion failed: " #ptr " is NULL\n"); \
+	    print("File: " __FILE__ "\n"); \
+	    print("Line: " _TO_STRING(__LINE__) "\n"); \
+	    debug_break(); \
+	} \
     } while (0)
-#else
-# define ASSERT(expr) // In release builds, assertions do nothing
-#endif
+
+// Define a macro to check if two pointers are equal
+#define ASSERT_EQUAL(ptr1, ptr2) \
+    do { \
+	if ((ptr1) != (ptr2)) { \
+	    print("Assertion failed: " #ptr1 " != " #ptr2 "\n"); \
+	    print("File: " __FILE__ "\n"); \
+	    print("Line: " _TO_STRING(__LINE__) "\n"); \
+	    debug_break(); \
+	} \
+    } while (0)
 
 #endif // CTXMCS_H
