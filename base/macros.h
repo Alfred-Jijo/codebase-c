@@ -33,12 +33,26 @@
 #ifndef CTXMCS_H
 #define CTXMCS_H
 
-// OS-specific includes for console output
+//
+// OS-specific headers macro
+//
 #if defined(_WIN32)
-# include <windows.h>
-#elif defined(__linux__) || (defined(__APPLE__) && defined(__MACH__))
-# include <unistd.h>
+# ifndef WIN32_LEAN_AND_MEAN
+#  define WIN32_LEAN_AND_MEAN
+# endif
+# define OS_HEADERS \
+    #include <windows.h>
+#elif defined(__linux__)
+# define OS_HEADERS \
+    #include <unistd.h>
+#elif defined(__APPLE__) && defined(__MACH__)
+# define OS_HEADERS \
+    #include <unistd.h>
+#else
+# define OS_HEADERS
 #endif
+
+#include <stdio.h>
 
 //
 // Compiler Detection
@@ -170,22 +184,12 @@ _strlen(const char* str)
     return len;
 }
 
-// Cross-platform prin function without stdio
 static
 inline
 void
 print(const char* message)
 {
-    size_t len = _strlen(message);
-#if OS_WINDOWS
-    HANDLE std_out = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (std_out != INVALID_HANDLE_VALUE)
-    {
-        WriteFile(std_out, message, (DWORD)len, NULL, NULL);
-    }
-#elif OS_LINUX || OS_MAC
-    write(STDOUT_FILENO, message, len);
-#endif
+    fputs(message, stdout);
 }
 
 static
@@ -284,6 +288,5 @@ print_context_info(void)
 #else
 # define DEPRECATED(msg)
 #endif
-
 
 #endif // CTXMCS_H
