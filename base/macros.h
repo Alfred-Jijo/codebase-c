@@ -248,4 +248,31 @@ print_context_info(void)
 	} \
     } while (0)
 
+
+// Linkage-based visibility macros
+#define private static
+#define public extern
+
+// Symbol visibility macros for shared libraries
+#if defined(__GNUC__) || defined(__clang__)
+# define PUBLIC __attribute__((visibility("default")))
+# define PRIVATE __attribute__((visibility("hidden")))
+#elif defined(_MSC_VER)
+# define PUBLIC __declspec(dllexport)
+# define PRIVATE __declspec(dllimport)
+#else
+# define PUBLIC
+# define PRIVATE
+#endif
+
+// Define a macro for deprecation warnings
+#if defined(__GNUC__) || defined(__clang__)
+# define DEPRECATED(msg) __attribute__((deprecated(msg)))
+#elif defined(_MSC_VER)
+# define DEPRECATED(msg) __declspec(deprecated(msg))
+#else
+# define DEPRECATED(msg)
+#endif
+
+
 #endif // CTXMCS_H
