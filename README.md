@@ -3,7 +3,7 @@
 This is a basic C project template designed to provide a clean and organized starting point for your C development. 
 
 ## Directory Structure
-
+```
 .
 ├── src/            # Application-specific source files (e.g., main.c)
 │   └── main.c
@@ -16,7 +16,7 @@ This is a basic C project template designed to provide a clean and organized sta
 ├── Makefile        # Defines build rules, compilation flags, and common commands
 ├── README.md       # This file
 └── LICENSE         # Placeholder for your project's license
-
+```
 
 ## How to Use This Template
 
