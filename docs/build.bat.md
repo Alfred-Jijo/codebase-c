@@ -117,7 +117,7 @@ This keeps build artifacts out of version control.
 
 ---
 
-## Customization Tips
+## Tips and Tricks
 
 - **Add more source files:**  
   Update `SOURCES` and `OBJECTS` variables.
@@ -125,6 +125,12 @@ This keeps build artifacts out of version control.
   Update `TESTS` and add corresponding build/run logic if needed.
 - **Change compiler flags:**  
   Edit `CFLAGS` for stricter warnings, optimizations, or debug info.
+- **Run from the right environment:**  
+  Always use a "Developer Command Prompt for VS" so `cl.exe` is available.
+- **Debugging:**  
+  Add `/Od` to `CFLAGS` for no optimization, or `/Zi` for debug info.
+- **Custom build steps:**  
+  You can add more targets or logic by editing the batch file.
 
 ---
 
@@ -154,3 +160,4 @@ This keeps build artifacts out of version control.
 This script is designed for MSVC (`cl.exe`).  
 For GCC/Clang or other platforms, use the provided `Makefile` instead.
 
+> **Tip:** Run these commands from a "Developer Command Prompt for VS" to ensure `cl.exe` is in your PATH.

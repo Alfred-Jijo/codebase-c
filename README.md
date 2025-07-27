@@ -44,6 +44,35 @@ This is a basic C project template designed to provide a clean and organized sta
 * `make install`: Installs the compiled executable to `$(PREFIX)/bin` (defaults to `~/.local/bin`). P.S. Ensure `$(PREFIX)/bin` is in your `PATH` environment variable.
 * `make uninstall`: Removes the installed executable.
 
+> **For detailed Makefile usage, customization, and troubleshooting, see [`docs/Makefile.md`](docs/Makefile.md).**
+
+## Windows: Using `build.bat`
+
+If you are on Windows and have Visual Studio's MSVC toolchain installed, you can use the provided batch script to build, run, and test your project.
+
+- **Build:**  
+  ```
+  build.bat
+  ```
+- **Run:**  
+  ```
+  build.bat run
+  ```
+- **Clean:**  
+  ```
+  build.bat clean
+  ```
+- **Test:**  
+  ```
+  build.bat test
+  ```
+- **Test a specific test:**  
+  ```
+  build.bat test test_macros
+  ```
+
+> **For detailed usage and customization, see [`docs/build.bat.md`](docs/build.bat.md).**
+
 ## Extending the Template
 
 * **Base Layer (`base/`)**: This directory is intended for fundamental, highly portable code that has no dependencies beyond the standard C Runtime.
@@ -57,6 +86,7 @@ This is a basic C project template designed to provide a clean and organized sta
     * **Update the `INCLUDE` variable in the `Makefile`** if your new module/library has public headers that need to be found by other modules.
 * **Adding external libraries**: You might need to add `-L/path/to/lib -l<library_name>` to the `LDFLAGS` variable in the `Makefile`.
 * **More complex builds**: For very large projects, consider using a more advanced build system like CMake, but for most small to medium C projects, this `Makefile` should suffice.
+
 
 ## License
 

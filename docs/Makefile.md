@@ -1,4 +1,3 @@
-
 # Understanding Your Project's Makefile
 
 This document explains the `Makefile` located in the root of your project, detailing its purpose, key variables, and how to modify it to manage your C codebase.
@@ -11,131 +10,167 @@ The `Makefile` automates the compilation, linking, and cleaning processes for yo
 
 ### 1. Project Configuration
 
-```Makefile
-
-NAME = my\_program
-VERSION = 0.0.0
+```makefile
+NAME = codebase
+VERSION = 0.4.3
 PREFIX ?= $(HOME)/.local
-
 ```
-
-* **`NAME`**: Defines the name of your executable. Change `my_program` to your desired application name.
-
-* **`VERSION`**: Project version (informational).
-
-* **`PREFIX`**: Installation prefix (used for `make install`, if implemented).
+- **`NAME`**: Defines the name of your executable. Change as needed.
+- **`VERSION`**: Project version (informational).
+- **`PREFIX`**: Installation prefix (used for `make install`, if implemented).
 
 ### 2. Compiler Settings
 
-```
-
+```makefile
 GCC ?= gcc
 CFLAGS = -Wall -Wextra -Werror -pedantic -Wno-unused-parameter -Wshadow -std=c99
-
-# CFLAGS = -Wall -Wextra -Werror -pedantic -Wno-unused-parameter -Wshadow -std=c99 -fsanitize=address
-
 ```
-
-* **`GCC`**: Specifies the C compiler to use. Defaults to `gcc`. You can change this if you use a different compiler (e.g., `clang`).
-
-* **`CFLAGS`**: Compiler flags applied to all compilations.
-
-  * **Adding/Removing Flags**: You can add or remove flags here. For example, to enable AddressSanitizer for memory error detection, uncomment the line with `-fsanitize=address`.
+- **`GCC`**: The C compiler to use. Defaults to `gcc`. Change to `clang` if desired.
+- **`CFLAGS`**: Compiler flags for all builds. Add `-g` for debug, `-O2 -DNDEBUG` for release.
 
 ### 3. Source Files and Object Files
 
-```
-
+```makefile
 SRC = src/main.c
-OBJ = $(SRC:%.c=%.o)
-
-````
-
-* **`SRC`**: **This is where you add new source files (`.c` files) to your project.**
-
-  * **How to Add Source Files**: If you create a new file like `src/module.c` or `base/utility.c`, you must add it to this list:
-
-    ```
-    SRC = src/main.c src/module.c base/utility.c
-    
-    ```
-
-  * The `OBJ` variable automatically generates the corresponding object file names (`.o`) from this list.
+OBJ = $(SRC:src/%.c=build/%.o)
+```
+- **`SRC`**: Add all your `.c` source files here. For example:
+  ```
+  SRC = src/main.c src/foo.c lib/bar.c
+  ```
+- **`OBJ`**: Automatically generates object file names in `build/`.
 
 ### 4. Include Paths
 
-````
-
+```makefile
 INCLUDE = -Ibase -Iinclude
-
-````
-
-* **`INCLUDE`**: Specifies directories where the compiler should search for header files (`.h`).
-
-  * **How to Add Include Directories**: If you add a new directory containing headers (e.g., `lib/external_lib/include`), you need to add its path here using the `-I` flag:
-
-    ```
-    INCLUDE = -Ibase -Iinclude -Ilib/external_lib/include
-    
-    ```
+```
+- Add any additional include directories here, e.g. `-Ilib/mylib/include`.
 
 ### 5. Build Directories
 
-````
-
-BIN\_DIR\_DEBUG = bin/debug
-BIN\_DIR\_RELEASE = bin/release
-BUILD\_DIR = build
-
+```makefile
+BIN_DIR_DEBUG = bin/debug
+BIN_DIR_RELEASE = bin/release
+BUILD_DIR = build
 ```
+- These control where debug/release binaries and object files are placed.
 
-* These variables define the output directories for debug executables, release executables, and intermediate object files, respectively. You typically won't need to change these unless you want a different directory structure for your binaries or build artifacts.
+### 6. Test Targets
+
+```makefile
+TESTDIR = test
+TESTS = $(TESTDIR)/test_macros.c
+TESTBINS = $(TESTS:$(TESTDIR)/%.c=$(TESTDIR)/%.exe)
+TESTALLSRC = $(TESTDIR)/test_all.c
+TESTALLBIN = $(TESTDIR)/test_all.exe
+```
+- Add new test `.c` files to `TESTS` as you add more tests.
+
+### 7. Directory and .gitignore Management
+
+The Makefile ensures that `build/`, `bin/debug/`, and `bin/release/` directories exist and contain a `.gitignore` file with:
+```
+*
+!.gitignore
+!*.c
+```
+This keeps build artifacts out of version control.
 
 ## How to Use the Makefile
 
 Open your terminal in the root directory of your project (where the `Makefile` is located) and run the following commands:
 
-* **`make`** or **`make all`**:
+- **`make`** or **`make all`**:  
+  Cleans the project, builds the optimized release version, and places it in `bin/release/`.
 
-  * Cleans the project (`make clean`).
+- **`make debug`**:  
+  Builds with debugging symbols, outputting to `bin/debug/NAME_debug`.
 
-  * Builds the optimized release version of your executable (`my_program`) and places it in `bin/release/`.
+- **`make release`**:  
+  Builds with optimizations, outputting to `bin/release/NAME`.
 
-  * Runs the release executable.
+- **`make run`**:  
+  Builds (if needed) and runs the release executable.
 
-* **`make debug`**:
+- **`make run_debug`**:  
+  Builds (if needed) and runs the debug executable.
 
-  * Compiles your project with debugging symbols (`-g`).
+- **`make clean`**:  
+  Removes all generated object files and executables.
 
-  * Creates an executable named `my_program_debug` in `bin/debug/`. Use this version for debugging with tools like `gdb`.
+- **`make test`**:  
+  Builds and runs all test executables in the `test/` directory.
 
-* **`make release`**:
+- **`make test_all`**:  
+  Builds all tests and runs the test runner (`test_all.exe`).
 
-  * Compiles your project with optimizations (`-O2`) and without debugging symbols.
+- **`make test_testname`**:  
+  Builds and runs a specific test, e.g. `make test_test_macros`.
 
-  * Creates an executable named `my_program` in `bin/release/`. This is the version suitable for deployment.
+## Tips and Tricks
 
-* **`make run`**:
+- **Adding New Source Files:**  
+  Add new `.c` files to `SRC`. The object files will be handled automatically.
 
-  * Ensures the release executable is built.
+- **Adding New Tests:**  
+  Add new test `.c` files to `TESTS`. They will be built and run with `make test`.
 
-  * Executes the `my_program` from `bin/release/`.
+- **Adding Include Directories:**  
+  Add new `-I` paths to `INCLUDE` as needed.
 
-* **`make clean`**:
+- **Debugging:**  
+  Use `make debug` to build with debug symbols, and `make run_debug` to run the debug build.
 
-  * Removes all generated object files from `build/`.
+- **Custom Compiler:**  
+  Override `GCC` on the command line:  
+  ```
+  make GCC=clang
+  ```
 
-  * Removes all executables from `bin/debug/` and `bin/release/`. This is useful for starting a fresh build.
+- **Sanitizers:**  
+  Add `-fsanitize=address` to `CFLAGS` for AddressSanitizer support.
+
+- **Parallel Builds:**  
+  Use `make -jN` to build with N parallel jobs.
+
+- **Install/Uninstall:**  
+  If you add install/uninstall targets, use `PREFIX` for the install location.
 
 ## Compilation Rule (`.c` to `.o`)
 
+```makefile
+$(BUILD_DIR)/%.o: src/%.c | $(BUILD_DIR)
+	@echo "Compiling $< to $@"
+	$(GCC) -c $< -o $@ $(CFLAGS) $(INCLUDE)
 ```
+This rule compiles any `.c` file in `src/` to an object file in `build/`, creating directories as needed.
 
-$(BUILD\_DIR)/%.o: %.c
-@mkdir -p $(@D)
-@echo "Compiling $\< to $@"
-$(GCC) -c $\< -o $@ $(CFLAGS) $(INCLUDE)
+## Example Workflow
 
-```
+1. Build and run the release executable:
+   ```
+   make
+   make run
+   ```
+2. Build and run the debug executable:
+   ```
+   make debug
+   make run_debug
+   ```
+3. Clean all build artifacts:
+   ```
+   make clean
+   ```
+4. Run all tests:
+   ```
+   make test
+   ```
+5. Run a specific test:
+   ```
+   make test_test_macros
+   ```
 
-This rule tells `make` how to compile any `.c` source file into an object file (`.o`). It ensures that object files are placed in the `build/` directory and that necessary subdirectories within `build/` are created automatically.
+---
+
+For more advanced build setups, consider using CMake or another build system, but for most small to medium C projects, this Makefile should suffice.
