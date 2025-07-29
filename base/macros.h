@@ -53,6 +53,7 @@
 #endif
 
 #include <stdio.h>
+#include <types.h>
 
 //
 // Compiler Detection
@@ -168,6 +169,27 @@
 // Stringification macros for C_STANDARD
 #define _STRINGIFY(x) #x
 #define _TO_STRING(x) _STRINGIFY(x)
+
+// Glue macros for concatenation
+#define _GLUE(x, y) x##y
+#define CONCAT(x, y) _GLUE(x, y)
+
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+#if defined(__GNUC__) || defined(__clang__)
+#define MIN(a, b) ({ \
+    __typeof__(a) _a = (a); \
+    __typeof__(b) _b = (b); \
+    _a < _b ? _a : _b; \
+})
+#define MAX(a, b) ({ \
+    __typeof__(a) _a = (a); \
+    __typeof__(b) _b = (b); \
+    _a > _b ? _a : _b; \
+})
+#else
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
 
 //
 // Context Information
@@ -288,5 +310,19 @@ print_context_info(void)
 #else
 # define DEPRECATED(msg)
 #endif
+
+// Pointer/integer conversion macros
+#define INT_FROM_PTR(ptr) ((uintptr_t)(ptr))
+#define PTR_FROM_INT(type, val) ((type *)(uintptr_t)(val))
+
+#define KB 1024
+#define MB (1024 * KB)
+#define GB (1024 * MB)
+#define TB (1024LL * GB)
+
+#define THOUSAND 1000
+#define MILLION 1000000
+#define BILLION 1000000000LL
+#define TRILLION 1000000000000LL
 
 #endif // CTXMCS_H
