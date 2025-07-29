@@ -20,7 +20,7 @@ TESTBINS = $(TESTS:$(TESTDIR)/%.c=$(TESTDIR)/%.exe)
 TESTALLSRC = $(TESTDIR)/test_all.c
 TESTALLBIN = $(TESTDIR)/test_all.exe
 
-.PHONY: all clean run debug release test test_all
+.PHONY: all clean run debug release test test_all install uninstall
 
 all: release
 
@@ -93,3 +93,14 @@ test_all: $(TESTBINS) $(TESTALLBIN)
 test_%: $(TESTDIR)/test_%.c
 	$(GCC) $(CFLAGS) $(INCLUDE) $< -o $(TESTDIR)/test_$*.exe
 	@./$(TESTDIR)/test_$*.exe
+
+install: $(BIN_DIR_RELEASE)/$(NAME)
+	@echo "Installing $(NAME) to $(PREFIX)/bin"
+	@mkdir -p $(PREFIX)/bin
+	@cp $(BIN_DIR_RELEASE)/$(NAME) $(PREFIX)/bin/$(NAME)
+	@echo "Install complete."
+
+uninstall:
+	@echo "Uninstalling $(NAME) from $(PREFIX)/bin"
+	@rm -f $(PREFIX)/bin/$(NAME)
+	@echo "Uninstall complete."
