@@ -53,7 +53,6 @@
 #endif
 
 #include <stdio.h>
-#include <types.h>
 
 //
 // Compiler Detection

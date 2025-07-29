@@ -1,3 +1,4 @@
 *.pdb
 .vs
 .vscode
+.clang-format
