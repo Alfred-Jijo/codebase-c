@@ -1,6 +1,6 @@
 #include "include.h"
 
 int main (void) {
-    print("Hello, World!\n");
+    print_context_info();
     return 0;
 }
