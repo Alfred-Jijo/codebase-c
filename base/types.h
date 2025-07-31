@@ -44,20 +44,13 @@ typedef uint32_t u32;
 typedef uint64_t u64;
 
 // Signed Integers (using 's' prefix)
-typedef int8_t s8;
-typedef int16_t s16;
-typedef int32_t s32;
-typedef int64_t s64;
-
-// Signed Integers (using 'i' prefix as aliases)
-typedef s8 i8;
-typedef s16 i16;
-typedef s32 i32;
-typedef s64 i64;
+typedef int8_t i8;
+typedef int16_t i16;
+typedef int32_t i32;
+typedef int64_t i64;
 
 // Pointer-sized Integers
 typedef uintptr_t usize;
-typedef intptr_t ssize;
 typedef intptr_t isize;
 
 // Floating-Point Types
@@ -69,7 +62,7 @@ typedef double f64;
 
 // 'long double' is a standard C type, but its precision is implementation-defined.
 // It can be 64-bit, 80-bit, or 128-bit depending on the compiler/platform.
-typedef long double ldouble;
+typedef long double fv128;
 
 // For f16 (half-precision float), it's not standard C.
 // GCC/Clang extension:
@@ -96,5 +89,17 @@ typedef char *cstring;
 typedef uint8_t byte;
 typedef uint8_t *bytes;
 typedef bool b8;
+typedef ptrdiff_t ssize;
+
+// Define some common size constants
+#define KB 1024
+#define MB (1024 * KB)
+#define GB (1024 * MB)
+#define TB (1024LL * GB)
+
+#define THOUSAND(x) x * 1000
+#define MILLION(x)  x * 1000000
+#define BILLION(x)  x * 1000000000LL
+#define TRILLION(x) x * 1000000000000LL
 
 #endif // TYPEDEF_H

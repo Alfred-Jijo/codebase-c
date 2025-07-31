@@ -1,1 +1,20 @@
-[]
+[
+	{
+		"directory": "C:/Users/alfre/dev/codebase-c/build",
+		"command": "C:\\BuildTools\\VC\\Tools\\MSVC\\14.42.34433\\bin\\Hostx64\\x64\\cl.exe  /nologo  -IC:\\Users\\alfre\\dev\\codebase-c\\base -IC:\\Users\\alfre\\dev\\codebase-c\\include /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 /FoCMakeFiles\\codebase.dir\\src\\main.c.obj /FdCMakeFiles\\codebase.dir\\ /FS -c C:\\Users\\alfre\\dev\\codebase-c\\src\\main.c",
+		"file": "C:/Users/alfre/dev/codebase-c/src/main.c",
+		"output": "CMakeFiles/codebase.dir/src/main.c.obj"
+	},
+	{
+		"directory": "C:/Users/alfre/dev/codebase-c/build",
+		"command": "C:\\BuildTools\\VC\\Tools\\MSVC\\14.42.34433\\bin\\Hostx64\\x64\\cl.exe  /nologo  -IC:\\Users\\alfre\\dev\\codebase-c\\base -IC:\\Users\\alfre\\dev\\codebase-c\\include /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 /FoCMakeFiles\\test_macros.dir\\test\\test_macros.c.obj /FdCMakeFiles\\test_macros.dir\\ /FS -c C:\\Users\\alfre\\dev\\codebase-c\\test\\test_macros.c",
+		"file": "C:/Users/alfre/dev/codebase-c/test/test_macros.c",
+		"output": "CMakeFiles/test_macros.dir/test/test_macros.c.obj"
+	},
+	{
+		"directory": "C:/Users/alfre/dev/codebase-c/build",
+		"command": "C:\\BuildTools\\VC\\Tools\\MSVC\\14.42.34433\\bin\\Hostx64\\x64\\cl.exe  /nologo  -IC:\\Users\\alfre\\dev\\codebase-c\\base -IC:\\Users\\alfre\\dev\\codebase-c\\include /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 /FoCMakeFiles\\test_all.dir\\test\\test_all.c.obj /FdCMakeFiles\\test_all.dir\\ /FS -c C:\\Users\\alfre\\dev\\codebase-c\\test\\test_all.c",
+		"file": "C:/Users/alfre/dev/codebase-c/test/test_all.c",
+		"output": "CMakeFiles/test_all.dir/test/test_all.c.obj"
+	}
+]
