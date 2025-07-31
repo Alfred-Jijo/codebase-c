@@ -314,14 +314,4 @@ print_context_info(void)
 #define INT_FROM_PTR(ptr) ((uintptr_t)(ptr))
 #define PTR_FROM_INT(type, val) ((type *)(uintptr_t)(val))
 
-#define KB 1024
-#define MB (1024 * KB)
-#define GB (1024 * MB)
-#define TB (1024LL * GB)
-
-#define THOUSAND 1000
-#define MILLION 1000000
-#define BILLION 1000000000LL
-#define TRILLION 1000000000000LL
-
 #endif // CTXMCS_H
