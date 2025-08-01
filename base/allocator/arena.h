@@ -22,16 +22,16 @@
 typedef struct Arena Arena;
 
 // Initializes the arena with a specified size
-void
-arena_init(Arena *arena, usize size);
+void *
+arena_init(Arena *arena, const usize size);
 
 // Allocates a block of memory from the arena
 void *
-arena_alloc(Arena *arena, usize size);
+arena_alloc(Arena *arena, const usize size);
 
 // Frees the arena and its memory block
 void
-arena_free(Arena *arena);
+arena_free(const Arena *arena);
 
 // Resets the arena, freeing all allocated memory but keeping the arena
 // structure intact
@@ -41,7 +41,7 @@ arena_reset(Arena *arena);
 // Checks if the arena has enough memory to allocate a block of the specified
 // size
 b8
-arena_has_space(const Arena *arena, usize size);
+arena_has_space(const Arena *arena, const usize size);
 
 // Gets the amount of memory currently used in the arena
 usize
@@ -55,6 +55,8 @@ arena_total_size(const Arena *arena);
 usize
 arena_free_space(const Arena *arena);
 
+#define ARENA_IMPLEMENTATION
+
 #ifdef ARENA_IMPLEMENTATION
 #include "common.h"
 
@@ -65,7 +67,7 @@ struct Arena {
 };
 
 void *
-arena_init(const Arena *arena, const usize size) {
+arena_init(Arena *arena, const usize size) {
 	arena->size = size;
 	arena->used = 0;
 	arena->memory = (u8 *)ARENA_MALLOC(size);
@@ -76,7 +78,7 @@ arena_init(const Arena *arena, const usize size) {
 }
 
 void *
-arena_alloc(const Arena *arena, const usize size) {
+arena_alloc(Arena *arena, const usize size) {
 	if (arena->used + size > arena->size) {
 		return ARENA_NOT_ENOUGH_SPACE;
 	}
@@ -86,7 +88,7 @@ arena_alloc(const Arena *arena, const usize size) {
 }
 
 void
-arena_free(const Arena *arena) {
+arena_free(Arena *arena) {
 	if (arena->memory) {
 		ARENA_FREE(arena->memory);
 		arena->memory = NULL;
@@ -96,8 +98,8 @@ arena_free(const Arena *arena) {
 }
 
 void
-arena_reset(const Arena *old_arena) {
-	arena->used = 0; // Reset used memory to zero
+arena_reset(Arena *old_arena) {
+	old_arena->used = 0; // Reset used memory to zero
 }
 
 b8
