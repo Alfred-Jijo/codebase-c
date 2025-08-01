@@ -55,8 +55,6 @@ arena_total_size(const Arena *arena);
 usize
 arena_free_space(const Arena *arena);
 
-#define ARENA_IMPLEMENTATION
-
 #ifdef ARENA_IMPLEMENTATION
 #include "common.h"
 
