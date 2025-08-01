@@ -48,6 +48,11 @@ arena_free(const Arena *arena);
 void
 arena_reset(Arena *arena);
 
+// Copies the contents of one arena to another
+// Note: This does not free the source arena's memory
+void
+arena_copy(Arena *dest, const Arena *src);
+
 // Checks if the arena has enough memory to allocate a block of the specified
 // size
 b8
@@ -103,6 +108,23 @@ arena_free(Arena *arena) {
 	}
 	arena->size = 0;
 	arena->used = 0;
+}
+
+void
+arena_copy(Arena *dest, const Arena *src) {
+	if (dest->memory) {
+		ARENA_FREE(dest->memory);
+	}
+	dest->size = src->size;
+	dest->used = src->used;
+	dest->memory = (u8 *)ARENA_MALLOC(src->size);
+	if (!dest->memory) {
+		dest->size = 0;
+		dest->used = 0;
+		return ARENA_NOT_INITIALIZED; // Allocation failed
+	}
+	ARENA_MEMCPY(dest->memory, src->memory, src->used);
+	dest->used = src->used; // Copy used memory
 }
 
 void
