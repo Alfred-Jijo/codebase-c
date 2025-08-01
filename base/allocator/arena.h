@@ -9,6 +9,16 @@
 #define ARENA_REALLLOC realloc
 #define ARENA_MEMCPY memcpy
 
+#if !defined(ARENA_MALLOC) || !defined(ARENA_FREE) ||                          \
+    !defined(ARENA_REALLLOC) || !defined(ARENA_MEMCPY)
+#error                                                                         \
+    "ARENA_MALLOC, ARENA_FREE, ARENA_REALLLOC, and ARENA_MEMCPY must be defined"
+#error "Like so: #define ARENA_MALLOC malloc"
+#error "	 #define ARENA_FREE free"
+#error "	 #define ARENA_REALLLOC realloc"
+#error "	 #define ARENA_MEMCPY memcpy"
+#endif
+
 // Defining return values for ARENA functions
 #define ARENA_SUCCESS 0
 #define ARENA_NOT_ENOUGH_SPACE -2
